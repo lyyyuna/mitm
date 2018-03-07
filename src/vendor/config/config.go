@@ -4,4 +4,5 @@ package config
 type Cfg struct {
 	Port *string
 	Addr *string
+	Log  *string
 }

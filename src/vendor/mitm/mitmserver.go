@@ -93,5 +93,5 @@ func (handler *HandlerWrapper) DumpHTTP(resp http.ResponseWriter, req *http.Requ
 		mylog.Fatalln("Fail to send response back to client.", err)
 	}
 
-	go httpDump(reqDump, respFromRemote)
+	go httpDump(reqDump, req, respFromRemote)
 }

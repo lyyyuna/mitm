@@ -4,6 +4,7 @@ import (
 	"config"
 	"flag"
 	"fmt"
+	"mitm"
 	"mylog"
 	"os"
 )
@@ -22,4 +23,5 @@ func main() {
 		fmt.Println("fail to create log file " + err.Error())
 	}
 	mylog.SetLog(log)
+	mitm.Gomitmproxy(conf)
 }

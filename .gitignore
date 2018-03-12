@@ -16,3 +16,5 @@
 # go specific
 pkg
 bin
+debug
+*.log

@@ -23,5 +23,8 @@ func main() {
 		fmt.Println("fail to create log file " + err.Error())
 	}
 	mylog.SetLog(log)
-	mitm.Gomitmproxy(conf)
+
+	ch := make(chan bool)
+	mitm.Gomitmproxy(conf, ch)
+	<-ch
 }

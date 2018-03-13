@@ -1,14 +1,19 @@
 package mitm
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"mylog"
 	"net/http"
 )
 
-func httpDump(reqDump []byte, req *http.Request, resp *http.Response) {
+func httpDump(reqDump []byte, resp *http.Response) {
 	defer resp.Body.Close()
 	respStatus := resp.Status
+
+	req, _ := ParseReq(reqDump)
 
 	fmt.Println("Status: ", respStatus)
 	fmt.Printf("%s %s %s\n", req.Method, req.Host, req.RequestURI)
@@ -34,4 +39,14 @@ func httpDump(reqDump []byte, req *http.Request, resp *http.Response) {
 		fmt.Printf("\t%s: %s\n", headerName, headerContext)
 	}
 	fmt.Println("")
+}
+
+// ParseReq why
+func ParseReq(b []byte) (*http.Request, error) {
+	// func ReadRequest(b *bufio.Reader) (req *Request, err error) { return readRequest(b, deleteHostHeader) }
+	var buf io.ReadWriter
+	buf = new(bytes.Buffer)
+	buf.Write(b)
+	bufr := bufio.NewReader(buf)
+	return http.ReadRequest(bufr)
 }

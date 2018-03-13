@@ -8,7 +8,8 @@ import (
 
 // Gomitmproxy create a mitm proxy and start it
 func Gomitmproxy(conf *config.Cfg, ch chan bool) {
-	handler := InitConfig(conf)
+	tlsConfig := config.NewTLSConfig("gomitmproxy-ca-pk.pem", "gomitmproxy-ca-cert.pem", "", "")
+	handler := InitConfig(conf, tlsConfig)
 	server := &http.Server{
 		Addr:         ":" + *conf.Port,
 		ReadTimeout:  1 * time.Hour,

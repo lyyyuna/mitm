@@ -3,10 +3,7 @@ package main
 import (
 	"config"
 	"flag"
-	"fmt"
 	"mitm"
-	"mylog"
-	"os"
 )
 
 func main() {
@@ -17,12 +14,6 @@ func main() {
 	conf.Log = flag.String("log", "mitm.log", "Specify the log path")
 
 	flag.Parse()
-
-	log, err := os.Create(*conf.Log)
-	if err != nil {
-		fmt.Println("fail to create log file " + err.Error())
-	}
-	mylog.SetLog(log)
 
 	ch := make(chan bool)
 	mitm.Gomitmproxy(conf, ch)

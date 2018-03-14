@@ -9,7 +9,7 @@ var logger *log.Logger
 
 // SetLog set logger
 func SetLog(l io.Writer) {
-	logger = log.New(l, "[mitmproxy]", log.LstdFlags)
+	logger = log.New(l, "[mitmproxy]", log.Ldate|log.Ltime|log.Lmicroseconds|log.Lshortfile)
 }
 
 // Fatalf wrapper of logger's Fatalf

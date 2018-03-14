@@ -2,9 +2,13 @@ package mitm
 
 import (
 	"config"
+	"log"
 	"net/http"
+	"os"
 	"time"
 )
+
+var logger *log.Logger
 
 // Gomitmproxy create a mitm proxy and start it
 func Gomitmproxy(conf *config.Cfg, ch chan bool) {
@@ -16,6 +20,10 @@ func Gomitmproxy(conf *config.Cfg, ch chan bool) {
 		WriteTimeout: 1 * time.Hour,
 		Handler:      handler,
 	}
+
+	l, _ := os.Create(*conf.Log)
+	logger = log.New(l, "[mitmproxy]", log.Ldate|log.Ltime|log.Lmicroseconds|log.Lshortfile)
+	logger.Println("Server is listening at ", server.Addr)
 
 	go func() {
 		server.ListenAndServe()

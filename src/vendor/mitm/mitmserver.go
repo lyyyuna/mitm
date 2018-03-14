@@ -6,7 +6,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
-	"mylog"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -78,7 +77,7 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 
 	connHj, _, err := resp.(http.Hijacker).Hijack()
 	if err != nil {
-		mylog.Fatalln("Hijack fail to take over the TCP connection from client's request")
+		logger.Fatalln("Hijack fail to take over the TCP connection from client's request")
 	}
 	defer connHj.Close()
 
@@ -93,7 +92,7 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 		}
 		connOut, err = net.DialTimeout("tcp", host, time.Second*30)
 		if err != nil {
-			mylog.Fatalln("Dial to", host, "error:", err)
+			logger.Fatalln("Dial to", host, "error:", err)
 			return
 		}
 	} else {
@@ -102,7 +101,7 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 		}
 		connOut, err = tls.Dial("tcp", host, handler.tlsConfig.ServerTLSConfig)
 		if err != nil {
-			mylog.Fatalln("Dial to", host, "error:", err)
+			logger.Fatalln("Dial to", host, "error:", err)
 			return
 		}
 	}
@@ -118,23 +117,23 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 		Body
 	*/
 	if err = req.Write(connOut); err != nil {
-		mylog.Fatalln("send to server error", err)
+		logger.Fatalln("send to server error", err)
 		return
 	}
 
 	respFromRemote, err := http.ReadResponse(bufio.NewReader(connOut), req)
 	if err != nil && err != io.EOF {
-		mylog.Fatalln("Fail to read response from remote server.", err)
+		logger.Fatalln("Fail to read response from remote server.", err)
 	}
 
 	respDump, err := httputil.DumpResponse(respFromRemote, true)
 	if err != nil {
-		mylog.Fatalln("Fail to dump the response.", err)
+		logger.Fatalln("Fail to dump the response.", err)
 	}
 	// Send remote response back to client
 	_, err = connHj.Write(respDump)
 	if err != nil {
-		mylog.Println("Fail to send response back to client.", err)
+		logger.Println("Fail to send response back to client.", err)
 	}
 
 	<-ch
@@ -152,14 +151,14 @@ func (handler *HandlerWrapper) InterceptHTTPS(resp http.ResponseWriter, req *htt
 
 	cert, err := handler.FakeCertForName(host)
 	if err != nil {
-		mylog.Fatalln("Could not get mitm cert for name: %s\nerror: %s", host, err)
+		logger.Fatalln("Could not get mitm cert for name: %s\nerror: %s", host, err)
 		respBadGateway(resp)
 		return
 	}
 
 	connIn, _, err := resp.(http.Hijacker).Hijack()
 	if err != nil {
-		mylog.Fatalln("Unable to access underlying connection from client: %s", err)
+		logger.Fatalln("Unable to access underlying connection from client: %s", err)
 		respBadGateway(resp)
 		return
 	}
@@ -177,7 +176,7 @@ func (handler *HandlerWrapper) InterceptHTTPS(resp http.ResponseWriter, req *htt
 	go func() {
 		err = http.Serve(listener, httpshandler)
 		if err != nil && err != io.EOF {
-			mylog.Printf("Error serving mitm'ed connection: %s", err)
+			logger.Printf("Error serving mitm'ed connection: %s", err)
 		}
 	}()
 

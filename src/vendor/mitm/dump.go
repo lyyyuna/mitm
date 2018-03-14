@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"mylog"
 	"net/http"
 )
 
@@ -26,7 +25,7 @@ func httpDump(reqDump []byte, resp *http.Response) {
 		fmt.Println("POST Param:")
 		err := req.ParseForm()
 		if err != nil {
-			mylog.Fatalln("ParseForm error: ", err)
+			logger.Fatalln("ParseForm error: ", err)
 		} else {
 			for k, v := range req.Form {
 				fmt.Printf("\t\t%s: %s\n", k, v)

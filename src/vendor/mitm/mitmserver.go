@@ -77,7 +77,7 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 
 	connHj, _, err := resp.(http.Hijacker).Hijack()
 	if err != nil {
-		logger.Fatalln("Hijack fail to take over the TCP connection from client's request")
+		logger.Println("Hijack fail to take over the TCP connection from client's request")
 	}
 	defer connHj.Close()
 
@@ -92,7 +92,7 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 		}
 		connOut, err = net.DialTimeout("tcp", host, time.Second*30)
 		if err != nil {
-			logger.Fatalln("Dial to", host, "error:", err)
+			logger.Println("Dial to", host, "error:", err)
 			return
 		}
 	} else {
@@ -101,7 +101,7 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 		}
 		connOut, err = tls.Dial("tcp", host, handler.tlsConfig.ServerTLSConfig)
 		if err != nil {
-			logger.Fatalln("Dial to", host, "error:", err)
+			logger.Println("Dial to", host, "error:", err)
 			return
 		}
 	}
@@ -117,18 +117,18 @@ func (handler *HandlerWrapper) DumpHTTPAndHTTPS(resp http.ResponseWriter, req *h
 		Body
 	*/
 	if err = req.Write(connOut); err != nil {
-		logger.Fatalln("send to server error", err)
+		logger.Println("send to server error", err)
 		return
 	}
 
 	respFromRemote, err := http.ReadResponse(bufio.NewReader(connOut), req)
 	if err != nil && err != io.EOF {
-		logger.Fatalln("Fail to read response from remote server.", err)
+		logger.Println("Fail to read response from remote server.", err)
 	}
 
 	respDump, err := httputil.DumpResponse(respFromRemote, true)
 	if err != nil {
-		logger.Fatalln("Fail to dump the response.", err)
+		logger.Println("Fail to dump the response.", err)
 	}
 	// Send remote response back to client
 	_, err = connHj.Write(respDump)
@@ -151,14 +151,14 @@ func (handler *HandlerWrapper) InterceptHTTPS(resp http.ResponseWriter, req *htt
 
 	cert, err := handler.FakeCertForName(host)
 	if err != nil {
-		logger.Fatalln("Could not get mitm cert for name: %s\nerror: %s", host, err)
+		logger.Println("Could not get mitm cert for name: %s\nerror: %s", host, err)
 		respBadGateway(resp)
 		return
 	}
 
 	connIn, _, err := resp.(http.Hijacker).Hijack()
 	if err != nil {
-		logger.Fatalln("Unable to access underlying connection from client: %s", err)
+		logger.Println("Unable to access underlying connection from client: %s", err)
 		respBadGateway(resp)
 		return
 	}

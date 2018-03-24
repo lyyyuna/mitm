@@ -25,7 +25,7 @@ func httpDump(reqDump []byte, resp *http.Response) {
 		fmt.Println("POST Param:")
 		err := req.ParseForm()
 		if err != nil {
-			logger.Fatalln("ParseForm error: ", err)
+			logger.Println("ParseForm error: ", err)
 		} else {
 			for k, v := range req.Form {
 				fmt.Printf("\t\t%s: %s\n", k, v)

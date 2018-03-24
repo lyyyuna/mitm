@@ -12,7 +12,7 @@ var logger *log.Logger
 
 // Gomitmproxy create a mitm proxy and start it
 func Gomitmproxy(conf *config.Cfg, ch chan bool) {
-	tlsConfig := config.NewTLSConfig("gomitmproxy-ca-pk.pem", "gomitmproxy-ca-cert.pem", "", "")
+	tlsConfig := config.NewTLSConfig("ca-pk.pem", "ca-cert.pem", "", "")
 	handler := InitConfig(conf, tlsConfig)
 	server := &http.Server{
 		Addr:         ":" + *conf.Port,
